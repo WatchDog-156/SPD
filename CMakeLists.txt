@@ -1,8 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(Laby_1 VERSION 1.0 LANGUAGES CXX)
+project(problem_jednomaszynowy VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(Laby_1 main.cpp)
+add_executable(problem_jednomaszynowy src/main.cpp
+                                      src/zadanie.cpp
+                                      src/permutacja.cpp
+                                      src/problem.cpp
+                                      src/rozwiazanie.cpp
+)
+
+target_include_directories(problem_jednomaszynowy PRIVATE inc)
