@@ -1,3 +1,6 @@
+#ifndef ZADANIA_H
+#define ZADANIA_H
+
 class Zadanie {
 public:
     int rj; //termin dostepnosci
@@ -7,3 +10,5 @@ public:
     Zadanie(int r, int p, int d) : rj(r), pj(p), dj(d) {}
     void wyswietl() const;
 };
+
+#endif

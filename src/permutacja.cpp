@@ -1,11 +1,17 @@
 #include "permutacja.h"
+#include <algorithm>
 
 Permutacja::Permutacja(int rozmiar): n(rozmiar){
     perm.resize(rozmiar);
 }
 
+bool Permutacja::next_perm(){
+    bool result = std::next_permutation(perm.begin(), perm.end());
+    return result;
+}
+
 int& Permutacja::operator[](int indeks){
-    if(0 <= indeks || indeks >= n){
+    if(indeks < 0 || indeks >= n){
         std::cerr << "Podany błędny indeks permutacji!";
         throw std::out_of_range("Indeks poza zakresem!");
     }

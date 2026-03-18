@@ -1,4 +1,8 @@
+#ifndef PROBLEM_H
+#define PROBLEM_H
+
 #include "permutacja.h"
+#include "zadanie.h"
 
 class Problem {
     int n;
@@ -7,7 +11,10 @@ public:
 
     void setN(int N) {n=N;}
     int getN() {return n;}
-    int kryterium(Permutacja p);
-    //Algorytm1();
-    //Algorytm2();
+    int kryterium(Permutacja p, const std::vector<Zadanie>& dane);
+    int Algorytm_ERD(const std::vector<Zadanie>& dane);
+    int Algorytm_EDD(const std::vector<Zadanie>& dane);
+    int Algorytm_zupelny(const std::vector<Zadanie>& dane);
 };
+
+#endif
