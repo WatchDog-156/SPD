@@ -5,8 +5,9 @@ class Problem {
 public:
     Problem(int liczba): n(liczba){}
 
-    //setery, getery
-    int kryteria(Permutacja p);
+    void setN(int N) {n=N;}
+    int getN() {return n;}
+    int kryterium(Permutacja p);
     //Algorytm1();
     //Algorytm2();
 };

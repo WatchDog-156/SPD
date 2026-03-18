@@ -1,1 +1,49 @@
 #include "permutacja.h"
+
+Permutacja::Permutacja(int rozmiar): n(rozmiar){
+    perm.resize(rozmiar);
+}
+
+int& Permutacja::operator[](int indeks){
+    if(0 <= indeks || indeks >= n){
+        std::cerr << "Podany błędny indeks permutacji!";
+        throw std::out_of_range("Indeks poza zakresem!");
+    }
+
+    return perm[indeks];
+}
+
+bool Permutacja::operator==(const Permutacja& other) const{
+    if(n != other.perm.size())
+        return false;
+
+    for(int i=0; i<n; i++){
+        if(perm[i] != other.perm[i])
+            return false;
+    }
+
+    return true;
+}
+
+Permutacja& Permutacja::operator=(const Permutacja& other){
+    if (this == &other) {
+        return *this; 
+    }
+
+    this->n = other.perm.size();
+    this->perm = other.perm; 
+
+    return *this;
+}
+
+std::ostream& operator<<(std::ostream& os, const Permutacja& permutacja){
+    os << "(";
+    for(int i=0; i<permutacja.n; i++){
+        os << permutacja.perm[i];
+        if(i != permutacja.n-1)
+            os << ","; 
+    }
+    os << ")";
+
+    return os;
+}

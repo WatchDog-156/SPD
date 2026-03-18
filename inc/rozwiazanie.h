@@ -2,6 +2,8 @@
 
 class Rozwiazanie {
 public:
+    Rozwiazanie(int kryt, Permutacja perm): kryterium(kryt), p(perm){}
+
     int kryterium;
     Permutacja p;
 };

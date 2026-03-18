@@ -9,7 +9,6 @@ add_executable(problem_jednomaszynowy src/main.cpp
                                       src/zadanie.cpp
                                       src/permutacja.cpp
                                       src/problem.cpp
-                                      src/rozwiazanie.cpp
 )
 
 target_include_directories(problem_jednomaszynowy PRIVATE inc)
