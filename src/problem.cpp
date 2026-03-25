@@ -74,3 +74,22 @@ int Problem::Algorytm_zupelny(const std::vector<Zadanie>& dane){
 
     return best_l;
 }
+
+// int Problem::Algorytm_BandB(const std::vector<Zadanie>& dane){
+//     Permutacja p(n);
+//     for(int i=0; i<n; i++) p.perm[i]=i;
+
+//     Permutacja best_p = p;
+
+//     int LB=this->Algorytm_Schrage_z_podzialem(dane);
+//     int UB=this->Algorytm_Schrage(dane);
+
+
+
+//     int B=this->Algorytm_Schrage(dane);
+//     if(B<UB){
+//         UB = B;
+//         best_p = p;
+//     }
+
+// }

@@ -61,5 +61,10 @@ int main() {
     prob.Algorytm_zupelny(zadania);
     std::cout << std::endl;
 
+    // prob.setN(20);
+    // std::cout << "Algorytm Branch and Bound" << std::endl;
+    // prob.Algorytm_BandB(zadania);
+    // std::cout << std::endl;
+
     return 0;
 }
