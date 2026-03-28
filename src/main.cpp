@@ -56,10 +56,17 @@ int main() {
     prob.Algorytm_EDD(zadania);
     std::cout << std::endl;
 
+    std::cout << "Algorytm wlasny" << std::endl;
+    prob.Algorytm_wlasny(zadania);
+    std::cout << std::endl;
+
     prob.setN(10);
     std::cout << "Przegląd zupełny" << std::endl;
     prob.Algorytm_zupelny(zadania);
     std::cout << std::endl;
+
+
+
 
     // prob.setN(20);
     // std::cout << "Algorytm Branch and Bound" << std::endl;
