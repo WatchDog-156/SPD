@@ -16,6 +16,7 @@ public:
     int Algorytm_EDD(const std::vector<Zadanie>& dane);
     int Algorytm_zupelny(const std::vector<Zadanie>& dane);
     int Algorytm_wlasny(const std::vector<Zadanie>& dane);
+    int Algorytm_Schrage(const std::vector<Zadanie>& dane);
     // int Algorytm_BandB(const std::vector<Zadanie>& dane);
 };
 

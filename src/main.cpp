@@ -60,6 +60,10 @@ int main() {
     prob.Algorytm_wlasny(zadania);
     std::cout << std::endl;
 
+    std::cout << "Algorytm Schrage" << std::endl;
+    prob.Algorytm_Schrage(zadania);
+    std::cout << std::endl;
+
     prob.setN(10);
     std::cout << "Przegląd zupełny" << std::endl;
     prob.Algorytm_zupelny(zadania);

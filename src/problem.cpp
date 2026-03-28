@@ -79,7 +79,7 @@ int Problem::Algorytm_wlasny(const std::vector<Zadanie>& dane){
     Permutacja p(n);
     std::vector<bool> czy_wykonane(n, false);
     int aktulany_czas = 0;
-    double alpha = 0.9;
+    double alpha = 0.5;
 
 
     for (int i=0; i<n; i++){
@@ -113,18 +113,56 @@ int Problem::Algorytm_wlasny(const std::vector<Zadanie>& dane){
         aktulany_czas += dane[najlepsze_zadanie].pj;
     }
 
-int L = this->kryterium(p, dane);
+    int L = this->kryterium(p, dane);
 
-std::cout << "Nalepsze L_max dla algorytmu wlasnego: " << L << std::endl;
-std::cout << "Permutacja: " << p << std::endl;
+    std::cout << "Nalepsze L_max dla algorytmu wlasnego: " << L << std::endl;
+    std::cout << "Permutacja: " << p << std::endl;
 
     return L;
-
-
-
-
 }
 
+int Problem::Algorytm_Schrage(const std::vector<Zadanie>& dane){
+    Permutacja p(n);
+    std::vector<bool> czy_wykonane(n, false);
+    int aktulany_czas = 0;
+
+    for(int i=0; i<n; i++){
+        int najlepsze_zadanie = -1;
+        double min_dj = 1e12;
+
+
+        bool dostepne = false;
+        for(int j=0; j<n; j++){
+            if(!czy_wykonane[j] && dane[j].rj < aktulany_czas){
+                dostepne = true;
+
+                if(dane[j].dj < min_dj){
+                    min_dj = dane[j].dj;
+                    najlepsze_zadanie = j;
+                }
+            }
+        }
+        if(!dostepne){
+            double nastepny_rj = 1e12;
+            for(int j=0; j<n; j++){
+                if(!czy_wykonane[j] && dane[j].rj < nastepny_rj){
+                    nastepny_rj = dane[j].rj;
+                    najlepsze_zadanie = j;
+                }
+            }
+            aktulany_czas = dane[najlepsze_zadanie].rj;
+        }
+        p.perm[i] = najlepsze_zadanie;
+        czy_wykonane[najlepsze_zadanie] = true;
+        aktulany_czas += dane[najlepsze_zadanie].pj;
+    }
+    int L = this->kryterium(p, dane);
+
+    std::cout << "Nalepsze L_max dla algorytmu Schrage " << L << std::endl;
+    std::cout << "Permutacja: " << p << std::endl;
+
+    return L;
+}
 // int Problem::Algorytm_BandB(const std::vector<Zadanie>& dane){
 //     Permutacja p(n);
 //     for(int i=0; i<n; i++) p.perm[i]=i;
