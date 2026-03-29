@@ -1,5 +1,16 @@
 #include "problem.h"
 #include <algorithm>
+#include <queue>
+
+struct PorownajZadania{
+    const std::vector<Zadanie>& dane;
+    PorownajZadania(const std::vector<Zadanie>& d) : dane(d) {}
+
+    bool operator()(int a, int b) const{
+        return dane[a].dj > dane[b].dj;
+    }
+};
+
 
 int Problem::kryterium(Permutacja p, const std::vector<Zadanie>& dane){
     int czas = 0;
@@ -121,6 +132,8 @@ int Problem::Algorytm_wlasny(const std::vector<Zadanie>& dane){
     return L;
 }
 
+
+
 std::pair<int, Permutacja> Problem::Algorytm_Schrage(const std::vector<Zadanie>& dane){
     Permutacja p(n);
     std::vector<bool> czy_wykonane(n, false);
@@ -162,6 +175,68 @@ std::pair<int, Permutacja> Problem::Algorytm_Schrage(const std::vector<Zadanie>&
     std::cout << "Permutacja: " << p << std::endl;
 
     return {L, p};
+}
+
+int Problem::Algorytm_Schrage_z_podzialem(const std::vector<Zadanie> &dane){
+    int aktualny_czas = 0;
+    int L_max=-1e9;
+    std::vector<int> permutacja;
+
+    //zadania posortowane po rj
+    std::vector<int> idx(n);
+    for(int i=0; i<n; i++) idx[i]=i;
+
+    std::sort(idx.begin(), idx.end(), [&](int a, int b){
+        return dane[a].rj < dane[b].rj;
+    }); 
+
+    //Kolejka priorytetowa G
+    std::priority_queue<int, std::vector<int>, PorownajZadania> G{PorownajZadania(dane)};
+
+    std::vector<int> pozostale_pj(n);
+    for(int i=0; i<n; i++) pozostale_pj[i] = dane[i].pj;
+
+    int nastepne_idx=0;
+    int obecne_zadanie=-1;
+
+    while(!G.empty() || nastepne_idx < n ){
+        while(nastepne_idx < n && dane[idx[nastepne_idx]].rj <= aktualny_czas){
+            int nowe_zadanie = idx[nastepne_idx];
+            G.push(nowe_zadanie);
+            nastepne_idx++;
+        }
+        if(G.empty()){
+            aktualny_czas = dane[idx[nastepne_idx]].rj;
+            continue;
+        }
+        int najlepsze_zadanie = G.top();
+        G.pop();
+        if (najlepsze_zadanie != obecne_zadanie) {
+            permutacja.push_back(najlepsze_zadanie);
+            obecne_zadanie = najlepsze_zadanie;
+        }
+
+        //pobranie czasu do nastepnego rj (rj nastpnego czasu - aktualny czas), ew koniec.
+        int czas_do_nastepnego_rj = (nastepne_idx < n) ? dane[idx[nastepne_idx]].rj - aktualny_czas : 1e9;
+        int czas_wykonania = std::min(pozostale_pj[najlepsze_zadanie], czas_do_nastepnego_rj);
+
+        aktualny_czas += czas_wykonania;
+        pozostale_pj[najlepsze_zadanie] -= czas_wykonania;
+
+        if(pozostale_pj[najlepsze_zadanie] == 0){
+            L_max = std::max(L_max, aktualny_czas - dane[najlepsze_zadanie].dj);
+            obecne_zadanie =-1;
+        }else{
+            G.push(najlepsze_zadanie);
+        }
+    }
+    std::cout << "Najlepsze L_max dla algorytmu Schrage z przerwaniami: " << L_max << std::endl;
+    std::cout << "Kolejnosc wykonywania zadan z przewaniami: ";
+    for(int id : permutacja) std::cout << id << " ";
+    std::cout << std::endl;
+
+
+    return L_max;
 }
 
 void Problem::Search_critical_block(Permutacja p, const std::vector<Zadanie>& dane, int critical_parameters[]){

@@ -20,6 +20,7 @@ public:
     int Algorytm_zupelny(const std::vector<Zadanie>& dane);
     int Algorytm_wlasny(const std::vector<Zadanie>& dane);
     std::pair<int, Permutacja> Algorytm_Schrage(const std::vector<Zadanie>& dane);
+    int Algorytm_Schrage_z_podzialem(const std::vector<Zadanie>& dane);
     int Algorytm_BandB(std::vector<Zadanie>& dane);
 };
 
