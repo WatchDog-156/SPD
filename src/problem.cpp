@@ -39,7 +39,7 @@ int Problem::Algorytm_ERD(const std::vector<Zadanie>& dane){
 
     int L = this->kryterium(p, dane);
 
-    std::cout << "L_max dla ERD: " << L << std::endl;
+    std::cout << "Najlepsze L_max dla ERD: " << L << std::endl;
     std::cout << "Permutacja dla ERD: " << p << std::endl;
 
     return L;
@@ -59,7 +59,7 @@ int Problem::Algorytm_EDD(const std::vector<Zadanie>& dane){
 
     int L = this->kryterium(p, dane);
 
-    std::cout << "L_max dla EDD: " << L << std::endl;
+    std::cout << "Najlepsze L_max dla EDD: " << L << std::endl;
     std::cout << "Permutacja dla EDD: " << p << std::endl;
 
     return L;
@@ -80,8 +80,8 @@ int Problem::Algorytm_zupelny(const std::vector<Zadanie>& dane){
         }
     } while(p.next_perm());
 
-    std::cout << "Nalepsze L_max: " << best_l << std::endl;
-    std::cout << "Permutacja: " << best_p << std::endl;
+    std::cout << "Nalepsze L_max dla przeglądu zupełnego: " << best_l << std::endl;
+    std::cout << "Permutacja dla przeglądu zupełnego: " << best_p << std::endl;
 
     return best_l;
 }
@@ -127,14 +127,14 @@ int Problem::Algorytm_wlasny(const std::vector<Zadanie>& dane){
     int L = this->kryterium(p, dane);
 
     std::cout << "Nalepsze L_max dla algorytmu wlasnego: " << L << std::endl;
-    std::cout << "Permutacja: " << p << std::endl;
+    std::cout << "Permutacja dla algorytmu własnego: " << p << std::endl;
 
     return L;
 }
 
 
 
-std::pair<int, Permutacja> Problem::Algorytm_Schrage(const std::vector<Zadanie>& dane){
+std::pair<int, Permutacja> Problem::Algorytm_Schrage(const std::vector<Zadanie>& dane, bool show){
     Permutacja p(n);
     std::vector<bool> czy_wykonane(n, false);
     int aktulany_czas = 0;
@@ -171,13 +171,15 @@ std::pair<int, Permutacja> Problem::Algorytm_Schrage(const std::vector<Zadanie>&
     }
     int L = this->kryterium(p, dane);
 
-    std::cout << "Nalepsze L_max dla algorytmu Schrage " << L << std::endl;
-    std::cout << "Permutacja: " << p << std::endl;
+    if(show){
+        std::cout << "Nalepsze L_max dla algorytmu Schrage " << L << std::endl;
+        std::cout << "Permutacja dla algorytmu Schrage: " << p << std::endl;
+    }
 
     return {L, p};
 }
 
-int Problem::Algorytm_Schrage_z_podzialem(const std::vector<Zadanie> &dane){
+int Problem::Algorytm_Schrage_z_podzialem(const std::vector<Zadanie> &dane, bool show){
     int aktualny_czas = 0;
     int L_max=-1e9;
     std::vector<int> permutacja;
@@ -230,11 +232,13 @@ int Problem::Algorytm_Schrage_z_podzialem(const std::vector<Zadanie> &dane){
             G.push(najlepsze_zadanie);
         }
     }
-    std::cout << "Najlepsze L_max dla algorytmu Schrage z przerwaniami: " << L_max << std::endl;
-    std::cout << "Kolejnosc wykonywania zadan z przewaniami: ";
-    for(int id : permutacja) std::cout << id << " ";
-    std::cout << std::endl;
 
+    if(show){
+        std::cout << "Najlepsze L_max dla algorytmu Schrage z przerwaniami: " << L_max << std::endl;
+        std::cout << "Kolejność wykonywania zadań z przewaniami: ";
+        for(int id : permutacja) std::cout << id << " ";
+        std::cout << std::endl;
+    }
 
     return L_max;
 }
@@ -247,7 +251,7 @@ void Problem::Search_critical_block(Permutacja p, const std::vector<Zadanie>& da
     // b
     for(int i=0; i<this->n; i++){
         int idx = p.perm[i];
-        time = std::max(time, dane[idx].rj + dane[idx].pj);
+        time = std::max(time, dane[idx].rj) + dane[idx].pj;
         end_time[i] = time;
         int L = time - dane[idx].dj;
         if(L >= Lmax){
@@ -257,33 +261,26 @@ void Problem::Search_critical_block(Permutacja p, const std::vector<Zadanie>& da
     }
 
     // a
-    critical_parameters[0] = critical_parameters[1];
-    int suma_p = 0;
-    for(int i = critical_parameters[1]; i>=0; i--){
-        suma_p += dane[p.perm[i]].pj;
-        int time_before = 0;
-        if(i==0){
-            time_before = dane[p.perm[i]].rj;
-        } else{
-            time_before = end_time[i-1];
+    critical_parameters[0] = critical_parameters[1]; 
+    for(int i = critical_parameters[1]; i > 0; i--){
+        if(end_time[i-1] < dane[p.perm[i]].rj){
+            break; 
         }
-        if(end_time[critical_parameters[1]] - time_before == suma_p){
-            critical_parameters[0] = i;
-        }
+        critical_parameters[0] = i - 1; 
     }
 
     // c
     critical_parameters[2] = -1;
     for(int i=critical_parameters[1]-1; i>=critical_parameters[0]; i--){
         if(dane[p.perm[i]].dj > dane[p.perm[critical_parameters[1]]].dj){
-            critical_parameters[3] = i;
+            critical_parameters[2] = i;
             break;
         }
     }
 }
 
 int Problem::Algorytm_BandB(std::vector<Zadanie>& dane){
-    std::pair<int, Permutacja> wynik_schrage = this->Algorytm_Schrage(dane);
+    std::pair<int, Permutacja> wynik_schrage = this->Algorytm_Schrage(dane,false);
     int current_Lmax = wynik_schrage.first;
     Permutacja current_perm = wynik_schrage.second;
 
@@ -316,7 +313,7 @@ int Problem::Algorytm_BandB(std::vector<Zadanie>& dane){
     // lewa gałąź, c przed blokiem K
     int old_dj = dane[idx_c].dj;
     dane[idx_c].dj = std::min(dane[idx_c].dj, d_star - p_star);
-    if(this->Algorytm_Schrage_z_podzialem(dane) < this->UB){
+    if(this->Algorytm_Schrage_z_podzialem(dane,false) < this->UB){
         this->Algorytm_BandB(dane);
     }
     dane[idx_c].dj = old_dj;
@@ -324,7 +321,7 @@ int Problem::Algorytm_BandB(std::vector<Zadanie>& dane){
     // prawa gałąź, c po bloku K
     int old_rj = dane[idx_c].rj;
     dane[idx_c].rj = std::max(dane[idx_c].rj, r_star + p_star);
-    if(this->Algorytm_Schrage_z_podzialem(dane) < this->UB){
+    if(this->Algorytm_Schrage_z_podzialem(dane,false) < this->UB){
         this->Algorytm_BandB(dane);
     }
     dane[idx_c].rj = old_rj;
