@@ -11,6 +11,14 @@ struct PorownajZadania{
     }
 };
 
+struct PorownajZadaniaRj {
+    const std::vector<Zadanie>& dane;
+    PorownajZadaniaRj(const std::vector<Zadanie>& d) : dane(d) {}
+
+    bool operator()(int a, int b) const {
+        return dane[a].rj > dane[b].rj;
+    }
+};
 
 int Problem::kryterium(Permutacja p, const std::vector<Zadanie>& dane){
     int czas = 0;
@@ -136,38 +144,36 @@ int Problem::Algorytm_wlasny(const std::vector<Zadanie>& dane){
 
 std::pair<int, Permutacja> Problem::Algorytm_Schrage(const std::vector<Zadanie>& dane, bool show){
     Permutacja p(n);
-    std::vector<bool> czy_wykonane(n, false);
-    int aktulany_czas = 0;
+    int aktualny_czas = 0; 
+    int wykonane_zadania = 0;
 
-    for(int i=0; i<n; i++){
-        int najlepsze_zadanie = -1;
-        double min_dj = 1e12;
+    PorownajZadaniaRj komparator_rj(dane);
+    PorownajZadania komparator_dj(dane);
 
+    std::priority_queue<int, std::vector<int>, PorownajZadaniaRj> N(komparator_rj);
+    std::priority_queue<int, std::vector<int>, PorownajZadania> G(komparator_dj);
 
-        bool dostepne = false;
-        for(int j=0; j<n; j++){
-            if(!czy_wykonane[j] && dane[j].rj < aktulany_czas){
-                dostepne = true;
+    for(int i = 0; i < n; i++){
+        N.push(i);
+    }
 
-                if(dane[j].dj < min_dj){
-                    min_dj = dane[j].dj;
-                    najlepsze_zadanie = j;
-                }
-            }
+    while(!N.empty() || !G.empty()){
+        while(!N.empty() && dane[N.top()].rj <= aktualny_czas){
+            G.push(N.top());
+            N.pop();
         }
-        if(!dostepne){
-            double nastepny_rj = 1e12;
-            for(int j=0; j<n; j++){
-                if(!czy_wykonane[j] && dane[j].rj < nastepny_rj){
-                    nastepny_rj = dane[j].rj;
-                    najlepsze_zadanie = j;
-                }
-            }
-            aktulany_czas = dane[najlepsze_zadanie].rj;
+
+        if(G.empty()){
+            aktualny_czas = dane[N.top()].rj;
+            continue; 
         }
-        p.perm[i] = najlepsze_zadanie;
-        czy_wykonane[najlepsze_zadanie] = true;
-        aktulany_czas += dane[najlepsze_zadanie].pj;
+
+        int najlepsze_zadanie = G.top();
+        G.pop();
+
+        p.perm[wykonane_zadania] = najlepsze_zadanie;
+        aktualny_czas += dane[najlepsze_zadanie].pj;
+        wykonane_zadania++;
     }
     int L = this->kryterium(p, dane);
 

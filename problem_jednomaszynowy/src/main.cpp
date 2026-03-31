@@ -15,8 +15,12 @@ int main() {
 
     std::vector<Zadanie> zadania;
 
-    std::string nazwa_pliku = "../dane_299.txt";
+    // std::string nazwa_pliku = "../dane_299.txt";
     // std::string nazwa_pliku = "../test.txt";
+    // std::string nazwa_pliku = "../test1.txt";
+    // std::string nazwa_pliku = "../100_Independent1400";
+    std::string nazwa_pliku = "../100_Independent0290";
+
     std::ifstream plik(nazwa_pliku);
     if(!plik.is_open()) {
         std::cerr << "Nie można otworzyć pliku " << nazwa_pliku << "!" << std::endl;
@@ -38,7 +42,7 @@ int main() {
         int rj;
         int pj;
         int dj;
-        if(iss >> rj >> pj >> dj) 
+        if(iss >> pj >> rj >> dj) 
             zadania.emplace_back(rj, pj, dj);
         else
             std::cerr << "Niepoprawne dane wejściowe zadania!" << std::endl;
