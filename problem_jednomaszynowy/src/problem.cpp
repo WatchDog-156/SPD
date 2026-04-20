@@ -94,11 +94,11 @@ int Problem::Algorytm_zupelny(const std::vector<Zadanie>& dane){
     return best_l;
 }
 
-int Problem::Algorytm_wlasny(const std::vector<Zadanie>& dane){
+int Problem::Algorytm_wlasny(const std::vector<Zadanie>& dane, double alpha){
     Permutacja p(n);
     std::vector<bool> czy_wykonane(n, false);
     int aktulany_czas = 0;
-    double alpha = 0.5;
+    // double alpha = 0.5;
 
 
     for (int i=0; i<n; i++){
@@ -134,8 +134,8 @@ int Problem::Algorytm_wlasny(const std::vector<Zadanie>& dane){
 
     int L = this->kryterium(p, dane);
 
-    std::cout << "Nalepsze L_max dla algorytmu wlasnego: " << L << std::endl;
-    std::cout << "Permutacja dla algorytmu własnego: " << p << std::endl;
+    // std::cout << "Nalepsze L_max dla algorytmu wlasnego: " << L << std::endl;
+    // std::cout << "Permutacja dla algorytmu własnego: " << p << std::endl;
 
     return L;
 }
@@ -333,4 +333,40 @@ int Problem::Algorytm_BandB(std::vector<Zadanie>& dane){
     dane[idx_c].rj = old_rj;
 
     return this->UB;
+}
+
+void Problem::Alpha_Analysis(const std::vector<Zadanie>& dane, int opt_L, int liczba_prob) {
+    double min_blad = 1e12, max_blad = -1e12, suma_bledow = 0;
+    double best_alpha = 0, worst_alpha = 0, blad_wzgledny = 0;
+
+    std::cout << "\nAnaliza wplywu parametru alpha (liczba prob: " << liczba_prob << ")" << std::endl;
+
+    for (int i = 0; i <= liczba_prob; i++) {
+        double alpha = static_cast<double>(i) / liczba_prob;
+        
+        int L_wlasny = this->Algorytm_wlasny(dane, alpha);
+        double blad = static_cast<double>(L_wlasny - opt_L);
+
+        if (blad < min_blad) {
+            min_blad = blad;
+            best_alpha = alpha;
+        }
+        if (blad > max_blad) {
+            max_blad = blad;
+            worst_alpha = alpha;
+        }
+        suma_bledow += blad;
+        if (opt_L != 0){
+            blad_wzgledny = min_blad /abs(opt_L) *100;
+        }
+    }
+
+    double sredni_blad = suma_bledow / (liczba_prob + 1);
+
+    // Wypisanie sformatowanego podsumowania
+    std::cout << "Analiza parametru alpha:" << std::endl;
+    std::cout << "Najlepsza alpha: " << best_alpha << " (Blad: " << min_blad << ")" << std::endl;
+    std::cout << "Najgorsza alpha: " << worst_alpha << " (Blad: " << max_blad << ")" << std::endl;
+    std::cout << "Sredni blad:    " << sredni_blad << std::endl;
+    std::cout << "Wzgledny blad minimalny (najlepszego przypadku): " << blad_wzgledny <<std::endl;
 }

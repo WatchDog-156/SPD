@@ -19,10 +19,11 @@ public:
     int Algorytm_ERD(const std::vector<Zadanie>& dane);
     int Algorytm_EDD(const std::vector<Zadanie>& dane);
     int Algorytm_zupelny(const std::vector<Zadanie>& dane);
-    int Algorytm_wlasny(const std::vector<Zadanie>& dane);
+    int Algorytm_wlasny(const std::vector<Zadanie>& dane, double alpha);
     std::pair<int, Permutacja> Algorytm_Schrage(const std::vector<Zadanie>& dane, bool show=true);
     int Algorytm_Schrage_z_podzialem(const std::vector<Zadanie>& dane, bool show=true);
     int Algorytm_BandB(std::vector<Zadanie>& dane);
+    void Alpha_Analysis(const std::vector<Zadanie>& dane, int opt_L, int liczba_prob);
 };
 
 #endif
