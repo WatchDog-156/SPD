@@ -7,7 +7,7 @@
 #include <chrono>
 
 #include "zadanie.h"
-// #include "permutacja.h"
+#include "permutacja.h"
 // #include "rozwiazanie.h"
 // #include "problem.h"
 
