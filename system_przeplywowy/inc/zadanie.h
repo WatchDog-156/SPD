@@ -1,13 +1,13 @@
 #ifndef ZADANIA_H
 #define ZADANIA_H
 
+#include <vector>
+
 class Zadanie {
 public:
-    int rj; //termin dostepnosci
-    int pj; //czas wykonania
-    int dj; //porzadany termin zakonczenia    
+    std::vector<int> times;   
 
-    Zadanie(int r, int p, int d) : rj(r), pj(p), dj(d) {}
+    Zadanie(const std::vector<int>& t) : times(t) {}
     void wyswietl() const;
 };
 

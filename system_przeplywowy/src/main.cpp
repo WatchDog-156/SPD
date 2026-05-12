@@ -7,16 +7,13 @@
 #include <chrono>
 
 #include "zadanie.h"
-#include "permutacja.h"
-#include "rozwiazanie.h"
-#include "problem.h"
+// #include "permutacja.h"
+// #include "rozwiazanie.h"
+// #include "problem.h"
 
 
 int main() {
-
-    std::vector<Zadanie> zadania;
-
-    std::string nazwa_pliku = "../100_Independent0376";
+    std::string nazwa_pliku = "../test/tail.dat";
 
     std::ifstream plik(nazwa_pliku);
     if(!plik.is_open()) {
@@ -24,48 +21,76 @@ int main() {
         return 1;
     }
  
-    int ilosc_zadan;
+    int ilosc_instancji;
     std::string linia;
     std::getline(plik, linia);
     std::istringstream iss(linia);
-    if(!(iss >> ilosc_zadan)){
-        std::cerr << "Niepoprawnie zdefiniowana ilość zadań!" << std::endl;
+    if(!(iss >> ilosc_instancji)){
+        std::cerr << "Niepoprawnie zdefiniowana ilość instancji!" << std::endl;
         return 1;
     }
 
-    while (std::getline(plik, linia)) {
+    int wybrana_instancja = 2;
+    if(wybrana_instancja > ilosc_instancji || wybrana_instancja <= 0){
+        std::cerr << "Niepoprawna instancja do pracy!" << std::endl;
+        return 1;
+    }
+
+    int aktualna_instancja = 0;
+    int ilosc_zadan = 0;
+    int ilosc_maszyn = 0;
+    int trash;
+    while(std::getline(plik, linia)){
         std::istringstream iss(linia);
 
-        int rj;
-        int pj;
-        int dj;
-        if(iss >> pj >> rj >> dj) 
-            zadania.emplace_back(rj, pj, dj);
-        else
-            std::cerr << "Niepoprawne dane wejściowe zadania!" << std::endl;
+        if(!(iss >> ilosc_zadan >> ilosc_maszyn >> trash)){
+            aktualna_instancja++;
+            if(aktualna_instancja==wybrana_instancja){
+                std::cout << "Ilość zadań: " << ilosc_zadan << ",ilość maszyn: " << ilosc_maszyn << std::endl;
+                break;
+            } 
+        }
+    }
+
+    std::vector<Zadanie> zadania;
+
+    for (int i=0; i<ilosc_zadan; i++) {
+        zadania.emplace_back(std::vector<int>());
+
+        std::getline(plik, linia);
+        std::istringstream iss(linia);
+        int czas;
+
+        for(int j=0; j<2*ilosc_maszyn; j++) {
+            if(iss >> czas){
+                if(!(j%2)) continue;
+                else zadania[i].times.push_back(czas);
+            }else
+                std::cerr << "Niepoprawne dane wejściowe zadania!" << std::endl;
+        }
+        zadania[i].wyswietl();
     }
 
     plik.close();
 
-
-    Problem prob(zadania.size());
+    // Problem prob(zadania.size());
 
     
-    std::cout << "Algorytm ERD" << std::endl;
-    auto start = std::chrono::high_resolution_clock::now();
-    prob.Algorytm_ERD(zadania);
-    auto stop = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli>  ms = stop - start;
-    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
-    std::cout << std::endl;
+    // std::cout << "Algorytm ERD" << std::endl;
+    // auto start = std::chrono::high_resolution_clock::now();
+    // prob.Algorytm_ERD(zadania);
+    // auto stop = std::chrono::high_resolution_clock::now();
+    // std::chrono::duration<double, std::milli>  ms = stop - start;
+    // std::cout << "Czas: " << ms.count() << " ms" << std::endl;
+    // std::cout << std::endl;
 
-    std::cout << "Algorytm EDD" << std::endl;
-    start = std::chrono::high_resolution_clock::now();
-    prob.Algorytm_EDD(zadania);
-    stop = std::chrono::high_resolution_clock::now();
-    ms = stop - start;
-    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
-    std::cout << std::endl;
+    // std::cout << "Algorytm EDD" << std::endl;
+    // start = std::chrono::high_resolution_clock::now();
+    // prob.Algorytm_EDD(zadania);
+    // stop = std::chrono::high_resolution_clock::now();
+    // ms = stop - start;
+    // std::cout << "Czas: " << ms.count() << " ms" << std::endl;
+    // std::cout << std::endl;
 
     // prob.setN(12);
     // std::cout << "Przegląd zupełny" << std::endl;
@@ -75,51 +100,6 @@ int main() {
     // ms = stop - start;
     // std::cout << "Czas: " << ms.count() << " ms" << std::endl;
     // std::cout << std::endl;
-
-    prob.setN(zadania.size());
-    std::cout << "Algorytm wlasny" << std::endl;
-    start = std::chrono::high_resolution_clock::now();
-    prob.Algorytm_wlasny(zadania, 0.5);
-    stop = std::chrono::high_resolution_clock::now();
-    ms = stop - start;
-    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
-    std::cout << std::endl;
-
-    std::cout << "Algorytm Schrage" << std::endl;
-    start = std::chrono::high_resolution_clock::now();
-    prob.Algorytm_Schrage(zadania);
-    stop = std::chrono::high_resolution_clock::now();
-    ms = stop - start;
-    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
-    std::cout << std::endl;
-
-    std::cout << "Algorytm Schrage z przerwaniami" << std::endl;
-    start = std::chrono::high_resolution_clock::now();
-    prob.Algorytm_Schrage_z_podzialem(zadania);
-    stop = std::chrono::high_resolution_clock::now();
-    ms = stop - start;
-    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
-    std::cout << std::endl;
-
-    // prob.setN(30);
-    std::cout << "Algorytm Branch and Bound (algorytm Carliera)" << std::endl;
-    start = std::chrono::high_resolution_clock::now();
-    prob.Algorytm_BandB(zadania);
-    stop = std::chrono::high_resolution_clock::now();
-    ms = stop - start;
-    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
-    std::cout << "Najlepsze L_max dla algorytmu B&B: " << prob.UB << std::endl;
-    std::cout << "Permutacja dla algorytmu B&B: " << prob.best_p << std::endl;
-    std::cout << std::endl;
-
-    int opt_L = prob.UB;
-    start = std::chrono::high_resolution_clock::now();
-    prob.Alpha_Analysis(zadania, opt_L, 50);
-    stop = std::chrono::high_resolution_clock::now();
-    ms = stop - start;
-    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
-    std::cout << std::endl;
-
 
     return 0;
 }

@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_executable(system_przeplywowy src/main.cpp
                                   src/zadanie.cpp
-                                  src/permutacja.cpp
-                                  src/problem.cpp
+                                #   src/permutacja.cpp
+                                #   src/problem.cpp
 )
 
 target_include_directories(system_przeplywowy PRIVATE inc)
