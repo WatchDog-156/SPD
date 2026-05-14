@@ -9,7 +9,7 @@
 #include "zadanie.h"
 #include "permutacja.h"
 #include "rozwiazanie.h"
-// #include "problem.h"
+#include "problem.h"
 
 
 int main() {
@@ -30,7 +30,7 @@ int main() {
         return 1;
     }
 
-    int wybrana_instancja = 2;
+    int wybrana_instancja = 11;
     if(wybrana_instancja > ilosc_instancji || wybrana_instancja <= 0){
         std::cerr << "Niepoprawna instancja do pracy!" << std::endl;
         return 1;
@@ -73,7 +73,7 @@ int main() {
 
     plik.close();
 
-    // Problem prob(zadania.size());
+    Problem prob(ilosc_zadan, ilosc_maszyn);
 
     
     // std::cout << "Algorytm ERD" << std::endl;
