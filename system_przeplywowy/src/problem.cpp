@@ -1,336 +1,150 @@
 #include "problem.h"
 #include <algorithm>
 #include <queue> 
-
-// struct PorownajZadania{
-//     const std::vector<Zadanie>& dane;
-//     PorownajZadania(const std::vector<Zadanie>& d) : dane(d) {}
-
-//     bool operator()(int a, int b) const{
-//         return dane[a].dj > dane[b].dj;
-//     }
-// };
-
-// struct PorownajZadaniaRj {
-//     const std::vector<Zadanie>& dane;
-//     PorownajZadaniaRj(const std::vector<Zadanie>& d) : dane(d) {}
-
-//     bool operator()(int a, int b) const {
-//         return dane[a].rj > dane[b].rj;
-//     }
-// };
+#include <cmath>
 
 int Problem::kryterium(Permutacja p, const std::vector<Zadanie>& dane){
-    int czas = 0;
-    int L_max = -99999;
-    for(int i=0; i<n; i++){
-        int idx = p.perm[i];
+    int czasy_zadan[p.perm.size()] = {0};
+    for(int i=0; i<m; i++){
+        for(int j=0; j<p.perm.size(); j++){
+            int idx = p.perm[j];
 
-        czas = std::max(czas, dane[idx].rj)+dane[idx].pj;
-        L_max = std::max(L_max, czas-dane[idx].dj);
+            if(j==0)
+                czasy_zadan[j] = czasy_zadan[j] + dane[idx].times[i];
+            else
+                czasy_zadan[j] = std::max(czasy_zadan[j], czasy_zadan[j-1]) + dane[idx].times[i];
+        }
     }
 
-    return L_max;
+    return czasy_zadan[n-1];
 }
 
-// int Problem::Algorytm_ERD(const std::vector<Zadanie>& dane){
-//     Permutacja p(n); 
+int Problem::Algorytm_zupelny(const std::vector<Zadanie>& dane){
+    Permutacja p(n);
+    for(int i=0; i<n; i++) p.perm[i]=i;
+
+    int best_c_max = 9999999;
+    Permutacja best_p = p;
+
+    do{
+        int aktualny = this->kryterium(p, dane);
+        if(aktualny < best_c_max){
+            best_c_max = aktualny;
+            best_p = p;
+        }
+    } while(p.next_perm());
+
+    std::cout << "Najmniejsze C_max dla przeglądu zupełnego: " << best_c_max << std::endl;
+    std::cout << "Permutacja dla przeglądu zupełnego: " << best_p << std::endl;
+
+    return best_c_max;
+}
+
+int Problem::Algorytm_NEH(const std::vector<Zadanie>& dane){
+    std::vector<std::pair<int, int>> sumy_zadan(n);
+    for(int i=0; i<n; i++){
+        int suma=0;
+        for(int j=0; j<m; j++)
+            suma += dane[i].times[j];
+        sumy_zadan[i] = {i, suma};
+    }
+
+    std::sort(sumy_zadan.begin(), sumy_zadan.end(), [](const std::pair<int, int>& a, const std::pair<int, int>& b) {
+        return a.second > b.second; 
+    });
+
+    Permutacja p(0);
+    p.perm.push_back(sumy_zadan[0].first);
     
-//     std::vector<int> idx(n);
-//     for(int i=0; i<n; i++) idx[i]=i;
+    for(int i=1; i<n; i++){
+        int nowe_zadanie = sumy_zadan[i].first;
 
-//     std::sort(idx.begin(), idx.end(), [&](int a, int b){
-//         return dane[a].rj < dane[b].rj;
-//     }); 
+        int best_c_max = 9999999;
+        Permutacja best_p(i+1);
 
-//     for(int i=0; i<n; i++) p.perm[i] = idx[i];
+        for(int j=0; j<i+1; j++){
+            Permutacja tmp_p = p;
+            tmp_p.perm.insert(tmp_p.perm.begin()+j, nowe_zadanie);
 
-//     int L = this->kryterium(p, dane);
+            int c_max = kryterium(tmp_p, dane);
 
-//     std::cout << "Najlepsze L_max dla ERD: " << L << std::endl;
-//     std::cout << "Permutacja dla ERD: " << p << std::endl;
+            if(c_max < best_c_max){
+                best_c_max = c_max;
+                best_p = tmp_p;
+            }
+        }
 
-//     return L;
-// }
+        p = best_p;
+    }
 
-// int Problem::Algorytm_EDD(const std::vector<Zadanie>& dane){
-//     Permutacja p(n);
-    
-//     std::vector<int> idx(n);
-//     for(int i=0; i<n; i++) idx[i]=i;
+    int best_c_max = kryterium(p, dane);
 
-//     std::sort(idx.begin(), idx.end(), [&](int a, int b){
-//         return dane[a].dj < dane[b].dj;
-//     }); 
+    std::cout << "Najmniejsze C_max dla algorytmu NEH: " << best_c_max << std::endl;
+    std::cout << "Permutacja dla algorytmu NEH: " << p << std::endl;
 
-//     for(int i=0; i<n; i++) p.perm[i] = idx[i];
+    return best_c_max;
+}
 
-//     int L = this->kryterium(p, dane);
+int Problem::Algorytm_BandB(std::vector<Zadanie>& dane){
+    int UB = Algorytm_NEH(dane);
 
-//     std::cout << "Najlepsze L_max dla EDD: " << L << std::endl;
-//     std::cout << "Permutacja dla EDD: " << p << std::endl;
+    int LB = 0;
+    for(int i=0; i<m; i++)
+        LB += dane[0].times[i];
+    for(int i=1; i<n; i++)
+        LB += dane[i].times[m-1];
 
-//     return L;
-// }
-
-// int Problem::Algorytm_zupelny(const std::vector<Zadanie>& dane){
-//     Permutacja p(n);
-//     for(int i=0; i<n; i++) p.perm[i]=i;
-
-//     int best_l = 99999;
-//     Permutacja best_p = p;
-
-//     do{
-//         int aktualny = this->kryterium(p, dane);
-//         if(aktualny < best_l){
-//             best_l = aktualny;
-//             best_p = p;
-//         }
-//     } while(p.next_perm());
-
-//     std::cout << "Nalepsze L_max dla przeglądu zupełnego: " << best_l << std::endl;
-//     std::cout << "Permutacja dla przeglądu zupełnego: " << best_p << std::endl;
-
-//     return best_l;
-// }
-
-// int Problem::Algorytm_wlasny(const std::vector<Zadanie>& dane, double alpha){
-//     Permutacja p(n);
-//     std::vector<bool> czy_wykonane(n, false);
-//     int aktulany_czas = 0;
-//     // double alpha = 0.5;
-
-
-//     for (int i=0; i<n; i++){
-//         int najlepsze_zadanie=-1;
-//         double min_priorytet=1e12;
-
-//         bool dostepne = false;
-//         for (int j=0; j<n; j++){
-//             if(!czy_wykonane[j] && dane[j].rj < aktulany_czas ){
-//                 dostepne = true;
-
-//                 double priorytet = alpha*dane[j].dj + (1-alpha)*dane[j].rj;
-//                 if(priorytet < min_priorytet){
-//                     min_priorytet = priorytet;
-//                     najlepsze_zadanie = j;
-//                 }
-//             }
-//         }
-//         if(!dostepne){
-//             double nastepny_rj = 1e12;
-//             for(int j=0; j<n; j++){
-//                 if(!czy_wykonane[j] && dane[j].rj < nastepny_rj){
-//                     nastepny_rj = dane[j].rj;
-//                     najlepsze_zadanie = j;
-//                 }
-//             }
-//             aktulany_czas = dane[najlepsze_zadanie].rj;
-//         }
-//         p.perm[i] = najlepsze_zadanie;
-//         czy_wykonane[najlepsze_zadanie] = true;
-//         aktulany_czas += dane[najlepsze_zadanie].pj;
-//     }
-
-//     int L = this->kryterium(p, dane);
-
-//     // std::cout << "Nalepsze L_max dla algorytmu wlasnego: " << L << std::endl;
-//     // std::cout << "Permutacja dla algorytmu własnego: " << p << std::endl;
-
-//     return L;
-// }
+    Permutacja best_p(1);
+    for(int i=0; i<n; i++){
 
 
 
-// std::pair<int, Permutacja> Problem::Algorytm_Schrage(const std::vector<Zadanie>& dane, bool show){
-//     Permutacja p(n);
-//     int aktualny_czas = 0; 
-//     int wykonane_zadania = 0;
+        
+        int c_max
 
-//     PorownajZadaniaRj komparator_rj(dane);
-//     PorownajZadania komparator_dj(dane);
+        int current_LB = c_max;
+        
 
-//     std::priority_queue<int, std::vector<int>, PorownajZadaniaRj> N(komparator_rj);
-//     std::priority_queue<int, std::vector<int>, PorownajZadania> G(komparator_dj);
+        if(current_LB > UB)
+            continue;
 
-//     for(int i = 0; i < n; i++){
-//         N.push(i);
-//     }
+    }
 
-//     while(!N.empty() || !G.empty()){
-//         while(!N.empty() && dane[N.top()].rj <= aktualny_czas){
-//             G.push(N.top());
-//             N.pop();
-//         }
+    int best_c_max = kryterium(best_p, dane);
 
-//         if(G.empty()){
-//             aktualny_czas = dane[N.top()].rj;
-//             continue; 
-//         }
+    std::cout << "Najmniejsze C_max dla algorytmu Branch and Bound: " << best_c_max << std::endl;
+    std::cout << "Permutacja dla algorytmu Branch and Bound: " << best_p << std::endl;
 
-//         int najlepsze_zadanie = G.top();
-//         G.pop();
+    return best_c_max;
+}
 
-//         p.perm[wykonane_zadania] = najlepsze_zadanie;
-//         aktualny_czas += dane[najlepsze_zadanie].pj;
-//         wykonane_zadania++;
-//     }
-//     int L = this->kryterium(p, dane);
+int Problem::Algorytm_AkceptacjiProgu(const std::vector<Zadanie>& dane){
+    Permutacja p_init(n), p(n);
+    for(int i=0; i<n; i++) p_init.perm[i]=i;
 
-//     if(show){
-//         std::cout << "Nalepsze L_max dla algorytmu Schrage " << L << std::endl;
-//         std::cout << "Permutacja dla algorytmu Schrage: " << p << std::endl;
-//     }
+    int best_c_max = kryterium(p_init, dane);
+    Permutacja best_p = p_init;
 
-//     return {L, p};
-// }
+    float T=10;
+    int k=1;
 
-// int Problem::Algorytm_Schrage_z_podzialem(const std::vector<Zadanie> &dane, bool show){
-//     int aktualny_czas = 0;
-//     int L_max=-1e9;
-//     std::vector<int> permutacja;
+    while(k<=1000){
+        p.perm=p_init.new_neighbour();
+        int c_max = kryterium(p, dane);
 
-//     //zadania posortowane po rj
-//     std::vector<int> idx(n);
-//     for(int i=0; i<n; i++) idx[i]=i;
+        if((c_max-kryterium(p_init, dane))<T)
+            p_init=p;
+        if(c_max<best_c_max){
+            best_c_max=c_max;
+            best_p=p;
+        }
 
-//     std::sort(idx.begin(), idx.end(), [&](int a, int b){
-//         return dane[a].rj < dane[b].rj;
-//     }); 
+        T=100*sin(0.1*k)/k;
+        k++;
+    }
 
-//     //Kolejka priorytetowa G
-//     std::priority_queue<int, std::vector<int>, PorownajZadania> G{PorownajZadania(dane)};
+    std::cout << "Najmniejsze C_max dla algorytmu akceptacji progu: " << best_c_max << std::endl;
+    std::cout << "Permutacja dla algorytmu akceptacji progu: " << best_p << std::endl;
 
-//     std::vector<int> pozostale_pj(n);
-//     for(int i=0; i<n; i++) pozostale_pj[i] = dane[i].pj;
-
-//     int nastepne_idx=0;
-//     int obecne_zadanie=-1;
-
-//     while(!G.empty() || nastepne_idx < n ){
-//         while(nastepne_idx < n && dane[idx[nastepne_idx]].rj <= aktualny_czas){
-//             int nowe_zadanie = idx[nastepne_idx];
-//             G.push(nowe_zadanie);
-//             nastepne_idx++;
-//         }
-//         if(G.empty()){
-//             aktualny_czas = dane[idx[nastepne_idx]].rj;
-//             continue;
-//         }
-//         int najlepsze_zadanie = G.top();
-//         G.pop();
-//         if (najlepsze_zadanie != obecne_zadanie) {
-//             permutacja.push_back(najlepsze_zadanie);
-//             obecne_zadanie = najlepsze_zadanie;
-//         }
-
-//         //pobranie czasu do nastepnego rj (rj nastpnego czasu - aktualny czas), ew koniec.
-//         int czas_do_nastepnego_rj = (nastepne_idx < n) ? dane[idx[nastepne_idx]].rj - aktualny_czas : 1e9;
-//         int czas_wykonania = std::min(pozostale_pj[najlepsze_zadanie], czas_do_nastepnego_rj);
-
-//         aktualny_czas += czas_wykonania;
-//         pozostale_pj[najlepsze_zadanie] -= czas_wykonania;
-
-//         if(pozostale_pj[najlepsze_zadanie] == 0){
-//             L_max = std::max(L_max, aktualny_czas - dane[najlepsze_zadanie].dj);
-//             obecne_zadanie =-1;
-//         }else{
-//             G.push(najlepsze_zadanie);
-//         }
-//     }
-
-//     if(show){
-//         std::cout << "Najlepsze L_max dla algorytmu Schrage z przerwaniami: " << L_max << std::endl;
-//         std::cout << "Kolejność wykonywania zadań z przewaniami: ";
-//         for(int id : permutacja) std::cout << id << " ";
-//         std::cout << std::endl;
-//     }
-
-//     return L_max;
-// }
-
-// void Problem::Search_critical_block(Permutacja p, const std::vector<Zadanie>& dane, int critical_parameters[]){
-//     int Lmax = -999999;
-//     int time = 0;
-//     std::vector<int> end_time(this->n);
-
-//     // b
-//     for(int i=0; i<this->n; i++){
-//         int idx = p.perm[i];
-//         time = std::max(time, dane[idx].rj) + dane[idx].pj;
-//         end_time[i] = time;
-//         int L = time - dane[idx].dj;
-//         if(L >= Lmax){
-//             Lmax = L;
-//             critical_parameters[1] = i;
-//         }
-//     }
-
-//     // a
-//     critical_parameters[0] = critical_parameters[1]; 
-//     for(int i = critical_parameters[1]; i > 0; i--){
-//         if(end_time[i-1] < dane[p.perm[i]].rj){
-//             break; 
-//         }
-//         critical_parameters[0] = i - 1; 
-//     }
-
-//     // c
-//     critical_parameters[2] = -1;
-//     for(int i=critical_parameters[1]-1; i>=critical_parameters[0]; i--){
-//         if(dane[p.perm[i]].dj > dane[p.perm[critical_parameters[1]]].dj){
-//             critical_parameters[2] = i;
-//             break;
-//         }
-//     }
-// }
-
-// int Problem::Algorytm_BandB(std::vector<Zadanie>& dane){
-//     std::pair<int, Permutacja> wynik_schrage = this->Algorytm_Schrage(dane,false);
-//     int current_Lmax = wynik_schrage.first;
-//     Permutacja current_perm = wynik_schrage.second;
-
-//     if(current_Lmax < this->UB){
-//         this->UB = current_Lmax;
-//         this->best_p = current_perm;
-//     }
-
-//     int critical_parameters[3] = {-1,-1,-1};                                    // a = 0, b = 1, c = 2
-//     this->Search_critical_block(current_perm, dane, critical_parameters);
-
-//     // zadanie jest optymalne w tej gałęzi
-//     if(critical_parameters[2]==-1){
-//         return this->UB;
-//     }
-
-//     // parametry dla bloku K
-//     int r_star = 999999;
-//     int p_star = 0;
-//     int d_star = -999999;
-//     for(int i=critical_parameters[2]+1; i<=critical_parameters[1]; i++){
-//         int idx = current_perm.perm[i];
-//         r_star = std::min(r_star, dane[idx].rj);
-//         d_star = std::max(d_star, dane[idx].dj);
-//         p_star += dane[idx].pj;
-//     }
-
-//     int idx_c = current_perm.perm[critical_parameters[2]];
-
-//     // lewa gałąź, c przed blokiem K
-//     int old_dj = dane[idx_c].dj;
-//     dane[idx_c].dj = std::min(dane[idx_c].dj, d_star - p_star);
-//     if(this->Algorytm_Schrage_z_podzialem(dane,false) < this->UB){
-//         this->Algorytm_BandB(dane);
-//     }
-//     dane[idx_c].dj = old_dj;
-
-//     // prawa gałąź, c po bloku K
-//     int old_rj = dane[idx_c].rj;
-//     dane[idx_c].rj = std::max(dane[idx_c].rj, r_star + p_star);
-//     if(this->Algorytm_Schrage_z_podzialem(dane,false) < this->UB){
-//         this->Algorytm_BandB(dane);
-//     }
-//     dane[idx_c].rj = old_rj;
-
-//     return this->UB;
-// }
+    return best_c_max;
+}

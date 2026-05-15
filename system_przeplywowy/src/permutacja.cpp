@@ -3,11 +3,21 @@
 
 Permutacja::Permutacja(int rozmiar): n(rozmiar){
     perm.resize(rozmiar);
+    srand(time(0));
 }
 
 bool Permutacja::next_perm(){
     bool result = std::next_permutation(perm.begin(), perm.end());
     return result;
+}
+
+std::vector<int> Permutacja::new_neighbour(){
+    std::vector<int> neighbour = perm;
+    int idx = rand()%(n-1);
+
+    std::swap(neighbour[idx], neighbour[idx+1]);
+
+    return neighbour;
 }
 
 int& Permutacja::operator[](int indeks){

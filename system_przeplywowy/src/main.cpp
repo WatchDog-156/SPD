@@ -30,7 +30,7 @@ int main() {
         return 1;
     }
 
-    int wybrana_instancja = 11;
+    int wybrana_instancja = 3;
     if(wybrana_instancja > ilosc_instancji || wybrana_instancja <= 0){
         std::cerr << "Niepoprawna instancja do pracy!" << std::endl;
         return 1;
@@ -68,38 +68,46 @@ int main() {
             }else
                 std::cerr << "Niepoprawne dane wejściowe zadania!" << std::endl;
         }
-        zadania[i].wyswietl();
+        // zadania[i].wyswietl();
     }
 
     plik.close();
 
     Problem prob(ilosc_zadan, ilosc_maszyn);
 
-    
-    // std::cout << "Algorytm ERD" << std::endl;
-    // auto start = std::chrono::high_resolution_clock::now();
-    // prob.Algorytm_ERD(zadania);
-    // auto stop = std::chrono::high_resolution_clock::now();
-    // std::chrono::duration<double, std::milli>  ms = stop - start;
-    // std::cout << "Czas: " << ms.count() << " ms" << std::endl;
-    // std::cout << std::endl;
+    prob.setN(9);
+    std::cout << std::endl;
+    std::cout << "Przegląd zupełny" << std::endl;
+    auto start = std::chrono::high_resolution_clock::now();
+    prob.Algorytm_zupelny(zadania);
+    auto stop = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> ms = stop - start;
+    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
 
-    // std::cout << "Algorytm EDD" << std::endl;
-    // start = std::chrono::high_resolution_clock::now();
-    // prob.Algorytm_EDD(zadania);
-    // stop = std::chrono::high_resolution_clock::now();
-    // ms = stop - start;
-    // std::cout << "Czas: " << ms.count() << " ms" << std::endl;
-    // std::cout << std::endl;
+    prob.setN(ilosc_zadan);
+    std::cout << std::endl;
+    std::cout << "Algorytm NEH" << std::endl;
+    start = std::chrono::high_resolution_clock::now();
+    prob.Algorytm_NEH(zadania);
+    stop = std::chrono::high_resolution_clock::now();
+    ms = stop - start;
+    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
 
-    // prob.setN(12);
-    // std::cout << "Przegląd zupełny" << std::endl;
-    // start = std::chrono::high_resolution_clock::now();
-    // prob.Algorytm_zupelny(zadania);
-    // stop = std::chrono::high_resolution_clock::now();
-    // ms = stop - start;
-    // std::cout << "Czas: " << ms.count() << " ms" << std::endl;
-    // std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << "Algorytm Branch and Bound" << std::endl;
+    start = std::chrono::high_resolution_clock::now();
+    prob.Algorytm_BandB(zadania);
+    stop = std::chrono::high_resolution_clock::now();
+    ms = stop - start;
+    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "Algorytm akceptacji progu" << std::endl;
+    start = std::chrono::high_resolution_clock::now();
+    prob.Algorytm_AkceptacjiProgu(zadania);
+    stop = std::chrono::high_resolution_clock::now();
+    ms = stop - start;
+    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
 
     return 0;
 }

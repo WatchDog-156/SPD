@@ -17,15 +17,11 @@ public:
     void setM(int M) {m=M;}
     int getN() {return n;}
     int getM() {return m;}
-    int kryterium(Permutacja p, const std::vector<Zadanie>& dane);
-    // void Search_critical_block(Permutacja p, const std::vector<Zadanie>& dane, int critical_parameters[]);    
-    // int Algorytm_ERD(const std::vector<Zadanie>& dane);
-    // int Algorytm_EDD(const std::vector<Zadanie>& dane);
-    // int Algorytm_zupelny(const std::vector<Zadanie>& dane);
-    // int Algorytm_wlasny(const std::vector<Zadanie>& dane, double alpha);
-    // std::pair<int, Permutacja> Algorytm_Schrage(const std::vector<Zadanie>& dane, bool show=true);
-    // int Algorytm_Schrage_z_podzialem(const std::vector<Zadanie>& dane, bool show=true);
-    // int Algorytm_BandB(std::vector<Zadanie>& dane);
+    int kryterium(Permutacja p, const std::vector<Zadanie>& dane);   
+    int Algorytm_zupelny(const std::vector<Zadanie>& dane);
+    int Algorytm_NEH(const std::vector<Zadanie>& dane);
+    int Algorytm_BandB(std::vector<Zadanie>& dane);
+    int Algorytm_AkceptacjiProgu(const std::vector<Zadanie>& dane);
 };
 
 #endif

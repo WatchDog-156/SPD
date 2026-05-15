@@ -11,6 +11,7 @@ public:
 
     std::vector<int> perm;
     bool next_perm(); 
+    std::vector<int> new_neighbour();
 
     int& operator[](int indeks);
     bool operator==(const Permutacja& other) const;
