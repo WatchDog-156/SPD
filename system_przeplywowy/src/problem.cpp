@@ -4,9 +4,13 @@
 #include <cmath>
 
 int Problem::kryterium(Permutacja p, const std::vector<Zadanie>& dane){
-    int czasy_zadan[p.perm.size()] = {0};
+    int size = p.perm.size();
+    if(size==0) return 0;
+
+    std::vector<int> czasy_zadan(size, 0);
+
     for(int i=0; i<m; i++){
-        for(int j=0; j<p.perm.size(); j++){
+        for(int j=0; j<size; j++){
             int idx = p.perm[j];
 
             if(j==0)
@@ -16,7 +20,7 @@ int Problem::kryterium(Permutacja p, const std::vector<Zadanie>& dane){
         }
     }
 
-    return czasy_zadan[n-1];
+    return czasy_zadan[size-1];
 }
 
 int Problem::Algorytm_zupelny(const std::vector<Zadanie>& dane){
@@ -40,7 +44,7 @@ int Problem::Algorytm_zupelny(const std::vector<Zadanie>& dane){
     return best_c_max;
 }
 
-int Problem::Algorytm_NEH(const std::vector<Zadanie>& dane){
+int Problem::Algorytm_NEH(const std::vector<Zadanie>& dane, bool show){
     std::vector<std::pair<int, int>> sumy_zadan(n);
     for(int i=0; i<n; i++){
         int suma=0;
@@ -79,43 +83,95 @@ int Problem::Algorytm_NEH(const std::vector<Zadanie>& dane){
 
     int best_c_max = kryterium(p, dane);
 
-    std::cout << "Najmniejsze C_max dla algorytmu NEH: " << best_c_max << std::endl;
-    std::cout << "Permutacja dla algorytmu NEH: " << p << std::endl;
+    if(show){
+        std::cout << "Najmniejsze C_max dla algorytmu NEH: " << best_c_max << std::endl;
+        std::cout << "Permutacja dla algorytmu NEH: " << p << std::endl;
+    }
 
     return best_c_max;
 }
 
-int Problem::Algorytm_BandB(std::vector<Zadanie>& dane){
-    int UB = Algorytm_NEH(dane);
+int Problem::Oblicz_LB(Node dziecko, const std::vector<Zadanie>& dane){
+    int size = dziecko.perm.perm.size();
+    std::vector<int> C(m, 0); 
+    std::vector<int> czasy_zadan(size, 0);
 
-    int LB = 0;
-    for(int i=0; i<m; i++)
-        LB += dane[0].times[i];
-    for(int i=1; i<n; i++)
-        LB += dane[i].times[m-1];
-
-    Permutacja best_p(1);
-    for(int i=0; i<n; i++){
-
-
-
-        
-        int c_max
-
-        int current_LB = c_max;
-        
-
-        if(current_LB > UB)
-            continue;
-
+    for (int k = 0; k < m; k++) {
+        for (int j = 0; j < size; j++) {
+            int idx = dziecko.perm.perm[j];
+            if (j == 0)
+                czasy_zadan[j] = czasy_zadan[j] + dane[idx].times[k];
+            else
+                czasy_zadan[j] = std::max(czasy_zadan[j], czasy_zadan[j-1]) + dane[idx].times[k];
+        }
+        C[k] = czasy_zadan[size - 1]; 
     }
 
-    int best_c_max = kryterium(best_p, dane);
+    int max_LB = 0;
+    for (int k = 0; k < m; k++) {
+        int suma_niezapl_k = 0;
+        int min_ogon;
 
-    std::cout << "Najmniejsze C_max dla algorytmu Branch and Bound: " << best_c_max << std::endl;
-    std::cout << "Permutacja dla algorytmu Branch and Bound: " << best_p << std::endl;
+        if(dziecko.pozostale.empty())
+            min_ogon = 0;
+        else 
+            min_ogon = 9999999;
 
-    return best_c_max;
+        for (int u : dziecko.pozostale) {
+            suma_niezapl_k += dane[u].times[k];
+
+            int ogon = 0;
+            for (int q =k+1; q<m; q++) 
+                ogon += dane[u].times[q];
+            if (ogon < min_ogon)
+                min_ogon = ogon;
+        }
+    
+        int LB_k = C[k] + suma_niezapl_k + min_ogon;
+        if (LB_k > max_LB) {
+            max_LB = LB_k;
+        }
+    }
+
+    return max_LB;
+}
+
+int Problem::Algorytm_BandB(std::vector<Zadanie>& dane){
+    int UB = Algorytm_NEH(dane,false);
+    Permutacja best_p(n);
+
+    std::priority_queue<Node, std::vector<Node>, std::greater<Node>> kolejka;
+
+    Node korzen;
+    for(int i=0; i<n; i++) korzen.pozostale.push_back(i);
+    korzen.LB = 0;
+    kolejka.push(korzen);
+
+    while(!kolejka.empty()){
+        Node obecny = kolejka.top();
+        kolejka.pop();
+
+        for(int i=0; i<obecny.pozostale.size(); i++){            
+            Node dziecko = obecny;
+            dziecko.perm.perm.push_back(obecny.pozostale[i]);
+            dziecko.pozostale.erase(dziecko.pozostale.begin() + i);
+
+            dziecko.LB = Oblicz_LB(dziecko, dane);
+
+            if(dziecko.LB < UB){
+                if(dziecko.pozostale.size()==0){
+                    UB = dziecko.LB;
+                    best_p = dziecko.perm;
+                } else
+                    kolejka.push(dziecko);
+            }
+        }
+    }
+
+    std::cout << "Najmniejsze C_max dla algorytmu Branch and Bound: " << UB << std::endl;
+    std::cout << "Permutacja dla algorytmu Branch and Bound: " << best_p << std::endl;          // jeżli permutacja to same 0, to najlepsza permutacja 
+                                                                                                // została znaleziona za pomocą algorytmu NEH
+    return UB;
 }
 
 int Problem::Algorytm_AkceptacjiProgu(const std::vector<Zadanie>& dane){
@@ -139,7 +195,7 @@ int Problem::Algorytm_AkceptacjiProgu(const std::vector<Zadanie>& dane){
             best_p=p;
         }
 
-        T=100*sin(0.1*k)/k;
+        T=T*0.99;
         k++;
     }
 

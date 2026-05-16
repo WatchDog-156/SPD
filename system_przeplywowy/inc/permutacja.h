@@ -7,7 +7,7 @@
 class Permutacja {
     int n;
 public:
-    Permutacja(int rozmiar);
+    Permutacja(int rozmiar=0);
 
     std::vector<int> perm;
     bool next_perm(); 
