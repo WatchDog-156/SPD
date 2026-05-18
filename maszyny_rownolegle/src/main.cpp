@@ -72,31 +72,86 @@ int main() {
     }
 
     plik.close();
+    
 
     Problem prob(ilosc_zadan, ilosc_maszyn);
 
-    prob.setN(9);
-    std::cout << std::endl;
-    std::cout << "Przegląd zupełny" << std::endl;
-    auto start = std::chrono::high_resolution_clock::now();
-    prob.Algorytm_zupelny(zadania);
-    auto stop = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> ms = stop - start;
-    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
-
     prob.setN(ilosc_zadan);
+    prob.setM(4);
     std::cout << std::endl;
     std::cout << "Algorytm LSA" << std::endl;
-    start = std::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     prob.Algorytm_LSA(zadania);
-    stop = std::chrono::high_resolution_clock::now();
-    ms = stop - start;
+    auto stop = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> ms = stop - start;
     std::cout << "Czas: " << ms.count() << " ms" << std::endl;
 
     std::cout << std::endl;
     std::cout << "Algorytm LPT" << std::endl;
     start = std::chrono::high_resolution_clock::now();
     prob.Algorytm_LPT(zadania);
+    stop = std::chrono::high_resolution_clock::now();
+    ms = stop - start;
+    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
+
+    prob.setM(2);
+    std::cout << std::endl;
+    std::cout << "Algorytm programowania dynamicznego dla 2 maszyn" << std::endl;
+    start = std::chrono::high_resolution_clock::now();
+    prob.Algorytm_PD2(zadania);
+    stop = std::chrono::high_resolution_clock::now();
+    ms = stop - start;
+    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
+
+    prob.setN(10);
+    std::cout << std::endl;
+    std::cout << "Przegląd zupełny dla 2 maszyn" << std::endl;
+    start = std::chrono::high_resolution_clock::now();
+    prob.Algorytm_zupelny(zadania);
+    stop = std::chrono::high_resolution_clock::now();
+    ms = stop - start;
+    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
+
+    prob.setN(ilosc_zadan);
+    std::cout << std::endl;
+    std::cout << "Algorytm PTAS dla 2 maszyn" << std::endl;
+    start = std::chrono::high_resolution_clock::now();
+    prob.Algorytm_PTAS(zadania, 5);
+    stop = std::chrono::high_resolution_clock::now();
+    ms = stop - start;
+    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "Algorytm FPTAS dla 2 maszyn" << std::endl;
+    start = std::chrono::high_resolution_clock::now();
+    prob.Algorytm_FPTAS2(zadania, 5);
+    stop = std::chrono::high_resolution_clock::now();
+    ms = stop - start;
+    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
+
+    prob.setM(3);
+    std::cout << std::endl;
+    std::cout << "Algorytm PTAS dla 3 maszyn" << std::endl;
+    start = std::chrono::high_resolution_clock::now();
+    prob.Algorytm_PTAS(zadania, 5);
+    stop = std::chrono::high_resolution_clock::now();
+    ms = stop - start;
+    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
+
+    prob.setN(10);
+    std::cout << std::endl;
+    std::cout << "Przegląd zupełny dla 3 maszyn" << std::endl;
+    start = std::chrono::high_resolution_clock::now();
+    prob.Algorytm_zupelny(zadania);
+    stop = std::chrono::high_resolution_clock::now();
+    ms = stop - start;
+    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
+
+    prob.setN(ilosc_zadan);
+    std::cout << std::endl;
+    std::cout << "Algorytm programowania dynamicznego dla 3 maszyn" << std::endl;
+    start = std::chrono::high_resolution_clock::now();
+    prob.Algorytm_PD3(zadania);
     stop = std::chrono::high_resolution_clock::now();
     ms = stop - start;
     std::cout << "Czas: " << ms.count() << " ms" << std::endl;
