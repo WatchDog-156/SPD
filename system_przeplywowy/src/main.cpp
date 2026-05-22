@@ -94,17 +94,44 @@ int main() {
     std::cout << "Czas: " << ms.count() << " ms" << std::endl;
 
     std::cout << std::endl;
-    std::cout << "Algorytm Branch and Bound" << std::endl;
+    std::cout << "Algorytm FNEH" << std::endl;
     start = std::chrono::high_resolution_clock::now();
-    prob.Algorytm_BandB(zadania);
+    prob.Algorytm_FNEH(zadania);
     stop = std::chrono::high_resolution_clock::now();
     ms = stop - start;
     std::cout << "Czas: " << ms.count() << " ms" << std::endl;
+
+    // std::cout << std::endl;
+    // std::cout << "Algorytm Branch and Bound" << std::endl;
+    // start = std::chrono::high_resolution_clock::now();
+    // prob.Algorytm_BandB(zadania);
+    // stop = std::chrono::high_resolution_clock::now();
+    // ms = stop - start;
+    // std::cout << "Czas: " << ms.count() << " ms" << std::endl;
 
     std::cout << std::endl;
     std::cout << "Algorytm akceptacji progu" << std::endl;
     start = std::chrono::high_resolution_clock::now();
     prob.Algorytm_AkceptacjiProgu(zadania);
+    stop = std::chrono::high_resolution_clock::now();
+    ms = stop - start;
+    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "Algorytm VNS" << std::endl;
+    start = std::chrono::high_resolution_clock::now();
+    prob.Algorytm_VNS(zadania, 3, 1000);
+    stop = std::chrono::high_resolution_clock::now();
+    ms = stop - start;
+    std::cout << "Czas: " << ms.count() << " ms" << std::endl;
+
+
+
+    prob.setM(2);
+    std::cout << std::endl;
+    std::cout << "Algorytm Johnsona" << std::endl;
+    start = std::chrono::high_resolution_clock::now();
+    prob.Algorytm_Johnsona(zadania);
     stop = std::chrono::high_resolution_clock::now();
     ms = stop - start;
     std::cout << "Czas: " << ms.count() << " ms" << std::endl;

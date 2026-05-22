@@ -54,9 +54,9 @@ Permutacja& Permutacja::operator=(const Permutacja& other){
 
 std::ostream& operator<<(std::ostream& os, const Permutacja& permutacja){
     os << "(";
-    for(int i=0; i<permutacja.n; i++){
+    for(int i=0; i<permutacja.perm.size(); i++){
         os << permutacja.perm[i];
-        if(i != permutacja.n-1)
+        if(i != (int)permutacja.perm.size()-1)
             os << ","; 
     }
     os << ")";
