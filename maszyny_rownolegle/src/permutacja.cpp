@@ -1,7 +1,7 @@
 #include "permutacja.h"
 #include <algorithm>
 
-Permutacja::Permutacja(int ilosc_zadan=0, int ilosc_maszyn=0): n(ilosc_zadan), m(ilosc_maszyn){
+Permutacja::Permutacja(int ilosc_zadan, int ilosc_maszyn): n(ilosc_zadan), m(ilosc_maszyn){
     podzial.resize(ilosc_zadan);
 }
 

@@ -1,0 +1,11 @@
+# Instancje testowe dla problemu Pm||Cmax
+# Format każdej instancji:
+# m n (liczba maszyn, liczba zadań)
+# p1 p2 p3 ... pn (czasy trwania poszczególnych zadań oddzielone spacją)
+
+Optymalne C_max: 9, suma C_max: 17
+Optymalne C_max: 10, suma C_max: 28
+Optymalne C_max: 6, suma C_max: 12
+Optymalne C_max: 340, suma C_max: 677
+Optymalne C_max: 30, suma C_max: 90
+Optymalne C_max: 122, suma C_max: 485

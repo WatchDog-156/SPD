@@ -51,7 +51,7 @@ int Problem::Algorytm_LPT(const std::vector<Zadanie>& dane){
     return best_c_max;
 }
 
-std::pair<Permutacja, int> Problem::Algorytm_PD2(const std::vector<Zadanie>& dane){
+std::pair<Permutacja, int> Problem::Algorytm_PD2(const std::vector<Zadanie>& dane, bool show){
     if(m!=2) return {Permutacja(n,m), -1};
 
     int s = 0;
@@ -93,7 +93,8 @@ std::pair<Permutacja, int> Problem::Algorytm_PD2(const std::vector<Zadanie>& dan
             best_p.podzial[j-1] = 1;
     }
 
-    std::cout << "Najmniejsze C_max dla algorytmu programowania dynamicznego dla 2 maszyn: " << c_opt << std::endl;
+    if(show)
+        std::cout << "Najmniejsze C_max dla algorytmu programowania dynamicznego dla 2 maszyn: " << c_opt << std::endl;
 
     return {best_p, c_opt};
 }
@@ -176,7 +177,7 @@ int Problem::Algorytm_FPTAS2(const std::vector<Zadanie>& dane, int k){
     for(int i=0; i<n; i++)
         przeskalowane_dane[i].time = przeskalowane_dane[i].time/k;
 
-    auto rozwiazanie = this->Algorytm_PD2(przeskalowane_dane);
+    auto rozwiazanie = this->Algorytm_PD2(przeskalowane_dane, false);
     Permutacja best_p = rozwiazanie.first;
 
     int best_c_max = this->kryterium(best_p, dane);

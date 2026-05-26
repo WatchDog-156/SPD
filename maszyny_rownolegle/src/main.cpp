@@ -13,7 +13,7 @@
 
 
 int main() {
-    std::string nazwa_pliku = "../test/tail.dat";
+    std::string nazwa_pliku = "../dane.txt";
 
     std::ifstream plik(nazwa_pliku);
     if(!plik.is_open()) {
@@ -41,12 +41,13 @@ int main() {
     int ilosc_maszyn = 0;
     int trash;
     while(std::getline(plik, linia)){
-        std::istringstream iss(linia);
+        iss.clear();
+        iss.str(linia);
 
-        if(!(iss >> ilosc_zadan >> ilosc_maszyn >> trash)){
+        if(!(iss >> ilosc_maszyn >> ilosc_zadan >> trash)){
             aktualna_instancja++;
             if(aktualna_instancja==wybrana_instancja){
-                std::cout << "Ilość zadań: " << ilosc_zadan << ",ilość maszyn: " << ilosc_maszyn << std::endl;
+                std::cout << "Ilość zadań: " << ilosc_zadan << ", ilość maszyn: " << ilosc_maszyn << std::endl;
                 break;
             } 
         }
@@ -54,25 +55,20 @@ int main() {
 
     std::vector<Zadanie> zadania;
 
-    for (int i=0; i<ilosc_zadan; i++) {
-        zadania.emplace_back(std::vector<int>());
-
-        std::getline(plik, linia);
-        std::istringstream iss(linia);
-        int czas;
-
-        for(int j=0; j<2*ilosc_maszyn; j++) {
-            if(iss >> czas){
-                if(!(j%2)) continue;
-                else zadania[i].time = czas;
-            }else
-                std::cerr << "Niepoprawne dane wejściowe zadania!" << std::endl;
+    std::getline(plik, linia);
+    iss.clear();
+    iss.str(linia);
+    int czas;
+    for (int i=0; i<ilosc_zadan; i++){
+        if(!(iss >> czas)){
+            std::cerr << "Niepoprawne dane wejściowe zadania!" << std::endl;
+            return 1;
         }
+        zadania.emplace_back(czas);
         // zadania[i].wyswietl();
     }
 
     plik.close();
-    
 
     Problem prob(ilosc_zadan, ilosc_maszyn);
 

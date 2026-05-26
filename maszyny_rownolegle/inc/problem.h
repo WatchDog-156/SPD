@@ -18,7 +18,7 @@ public:
     int kryterium(Permutacja p, const std::vector<Zadanie>& dane);   
     int Algorytm_LSA(const std::vector<Zadanie>& dane, bool show=true);
     int Algorytm_LPT(const std::vector<Zadanie>& dane);
-    std::pair<Permutacja, int> Algorytm_PD2(const std::vector<Zadanie>& dane);
+    std::pair<Permutacja, int> Algorytm_PD2(const std::vector<Zadanie>& dane, bool show=true);
     int Algorytm_zupelny(const std::vector<Zadanie>& dane);
     int Algorytm_PTAS(const std::vector<Zadanie>& dane, int k);
     int Algorytm_FPTAS2(const std::vector<Zadanie>& dane, int k);
